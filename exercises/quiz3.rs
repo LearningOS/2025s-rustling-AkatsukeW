@@ -29,7 +29,7 @@ pub struct ReportCard {
 
 impl ReportCard {
     pub fn print(&self) -> String {
-        match self.grade {
+        match &self.grade {
             Grade::Numeric(n) => format!("{} ({}) - achieved a grade of {}", self.student_name, self.student_age, n),
             Grade::Alphabetic(s) => format!("{} ({}) - achieved a grade of {}", self.student_name, self.student_age, s),
         }

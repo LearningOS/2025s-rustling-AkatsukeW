@@ -35,47 +35,20 @@
 // hint.
 
 
-fn main() {
-    let test_foo = env::var("TEST_FOO")
-        .unwrap_or_else(|_| panic!("must set TEST_FOO "));
-
-    let timestamp: u64 = test_foo.parse()
-        .unwrap_or_else(|_| panic!("TEST_FOO must is valid unix time: {}", test_foo));
-
-    let out_dir = env::var_os("OUT_DIR").unwrap();
-    let dest_path = Path::new(&out_dir).join("test_config.rs");
-
-    let mut f = File::create(&dest_path).unwrap();
-    writeln!(
-        f,
-        "pub const EXPECTED_START: u64 = {};\n\
-         pub const VALID_RANGE: std::ops::RangeInclusive<u64> = {}..={};",
-        timestamp, timestamp, timestamp + 10
-    ).unwrap();
-
-    println!("cargo:rerun-if-env-changed=TEST_FOO");
-}
+fn main() {}
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    // 包含构建脚本生成的配置（网页3）
-    include!(concat!(env!("OUT_DIR"), "/test_config.rs"));
-
     #[test]
     fn test_success() {
-        // 1. 获取当前时间戳（网页1）
-        let now = std::time::SystemTime::now()
+        let timestamp = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
-            .expect("系统时间早于UNIX纪元时间")
+            .unwrap()
             .as_secs();
-
-        // 2. 使用预生成的配置（网页5）
-        assert!(
-            VALID_RANGE.contains(&now),
-            "当前时间戳 {} 超出允许范围 [{}, {}]",
-            now, VALID_RANGE.start(), VALID_RANGE.end()
-        );
+        let s = std::env::var("TEST_FOO").unwrap();
+        let e: u64 = s.parse().unwrap();
+        assert!(timestamp >= e && timestamp < e + 10);
     }
 }

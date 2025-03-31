@@ -28,18 +28,16 @@ pub enum Command {
     Append(usize),
 }
 
-mod my_module {
-    use super::Command;
 
-    // TODO: Complete the function signature!
-    pub fn transformer(input: Vec<String, Command>) -> Vec<String> {
-        // TODO: Complete the output declaration!
-        let mut output = vec![];
-        for (string, command) in input.iter() {
-            match command {
-                Command::Uppercase => output.push(string.to_uppercase()),
-                Command::Trim => output.push(string.trim().to_string()),
-                Command::Append(n) => output.push(string.clone() + &"bar".repeat(*n)),
+mod my_module {
+    use super::{Command};
+    pub fn transformer(input: Vec<(String, Command)>) -> Vec<String> {
+        let mut output :Vec<String> = vec![];
+        for (s, c) in input.iter() {
+            match c {
+                Command::Uppercase => output.push(s.to_uppercase()),
+                Command::Trim => output.push(s.trim().to_string()),
+                Command::Append(n) => output.push(s.clone() + &"bar".repeat(*n)),
             }
         }
         output
@@ -49,12 +47,12 @@ mod my_module {
 #[cfg(test)]
 mod tests {
     // TODO: What do we need to import to have `transformer` in scope?
-    use super::my_module::transformer;
+    use super::my_module;
     use super::Command;
 
     #[test]
     fn it_works() {
-        let output = transformer(vec![
+        let output = my_module::transformer(vec![
             ("hello".into(), Command::Uppercase),
             (" all roads lead to rome! ".into(), Command::Trim),
             ("foo".into(), Command::Append(1)),
